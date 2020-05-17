@@ -28,15 +28,26 @@ class App extends Component {
     })
   }
 
-  updatePost() {
+  updatePost(id, text) {
+   axios.put(`https://practiceapi.devmountain.com/api/posts?id=${ id }`, { text }).then( results => {
+    this.setState({ posts: results.data });
+  })
+  
   
   }
 
-  deletePost() {
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${ id }`).then(response => {
+      this.setState({posts: response.data})
+    }).catch(()=> alert("Failed to delete"))
 
   }
 
-  createPost() {
+  createPost(text) {
+    axios.post('https://practiceapi.devmountain.com/api/posts', {text})
+    .then(response => {
+      this.setState({posts: response.data})
+    }).catch(()=> alert("Post not posted"))
 
   }
 
@@ -49,10 +60,16 @@ class App extends Component {
 
         <section className="App__content">
 
-          <Compose />
+          <Compose createPostFn={this.createPost} />
+          
           {
-          posts.map( elem => (
-            <Post key={ elem.id } />
+        posts.map( elem => (
+            <Post key={ elem.id }
+                  text={elem.text}
+                  date={elem.date} 
+                  id={elem.id}
+                  updatePostFn={this.updatePost}
+                  deletePostFn={this.deletePost}/>
           ))
         }
         </section>
